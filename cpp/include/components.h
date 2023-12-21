@@ -21,7 +21,7 @@ class Neuron {
   private:
   double input;
   double output;
-  std::vector<Weight> Weights;
+  std::vector<Weight> *Weights;
 
   public:
   Neuron();
@@ -35,7 +35,7 @@ class Neuron {
 
 class Layer {
   private:
-  std::vector<Neuron> Neurons;
+  std::vector<Neuron> *Neurons;
   public:
   Layer();
   ~Layer();
@@ -44,13 +44,15 @@ class Layer {
 
 class NeuralNetwork {
   private:
-  Layer inputLayer;
-  std::vector<Layer> deeLayers;
-  Layer outputLayer;
+  Layer *inputLayer;
+  std::vector<Layer> *deepLayers;
+  Layer *outputLayer;
 
   public:
-  NeuralNetwork(std::vector<int> topology);
+  NeuralNetwork();
   ~NeuralNetwork();
+  bool buildNeuralNetwork(std::vector<int> morfology);
+  bool connecLayers();
   bool FeedFoward();
   bool BackPropagation();
 };
