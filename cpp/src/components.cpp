@@ -1,6 +1,8 @@
 // components.cpp
 
 #include "../include/components.h"
+#include "../include/activateFunctions.h"
+
 #include <cstdlib>
 #include <iostream>
 #include <exception>
@@ -10,8 +12,7 @@
 // Weight
 
 Weight::Weight() {
-  srand((unsigned) time(NULL));
-  this->weight = (double) rand()/RAND_MAX;
+  this->weight = genRandomValue();
 }
 
 Weight::~Weight() {}
@@ -20,7 +21,7 @@ void Weight::setWeight(double weight) {
   this->weight = weight;
 }
 
-double Weight::getWeight() {
+double Weight::getWeight() const{
   return this->weight;
 }
 
@@ -28,7 +29,7 @@ bool Weight::multiplyValue(double value) {
   try {
     value *= this->weight;
   } catch (const std::exception& e) {
-    std::cerr << "Multiply value to weight erro: " << e.what() <<std::endl;
+    std::cerr << "Error in multiplyValue from Weight\n" << e.what() << std::endl;
     return false;
   }
   return true;
@@ -39,7 +40,7 @@ bool Weight::multiplyValue(double value) {
 Neuron::Neuron() {
   this->input = 0;
   this->output = 0;
-  this->Weights = std::vector<Weight>();
+  this->weights = std::vector<Weight>();
 }
 
 Neuron::~Neuron(){}
@@ -48,7 +49,7 @@ void Neuron::setInput(double input) {
   this->input = input;
 }
 
-double Neuron::getInput() {
+double Neuron::getInput() const {
   return this->input;
 }
 
@@ -56,23 +57,26 @@ void Neuron::setOutput(double output) {
   this->output = output;
 }
 
-double Neuron::getOutput() {
+double Neuron::getOutput() const {
   return this->output;
 }
 
-std::vector<Weight> Neuron::getWeights() {
-  return this->Weights;
+std::vector<Weight> Neuron::getWeights() const{
+  return this->weights;
 }
 
 bool Neuron::connectWeights(unsigned short int numberOfConnections) {
+  std::cout << "Executing connectWeights" << std::endl;
   try {
-    for (int i = 0; i < numberOfConnections; ++i) {
-      this->Weights.emplace_back(Weight());
-    } 
-  } catch (const std::exception& e) {
-    std::cerr << "Error in connectWeights: " << e.what() << std::endl;
-    return false;
+    this->weights.clear();
+    for (unsigned short int i = 0; i < numberOfConnections; ++i) {
+      Weight weight;
+      weights.push_back(weight);
     }
+  } catch (const std::exception& e) {
+    std::cerr << "Error in connectWeights from Neuron\n" << e.what() << std::endl;
+    return false;
+  }
   return true;
 }
 
@@ -86,9 +90,13 @@ Layer::~Layer() {
   this->Neurons.clear();
 }
 
+std::vector<Neuron> Layer::getNeurons() const {
+  return this->Neurons;
+}
+
 bool Layer::fillLayer(unsigned short int numberOfNeurons) {
   try {
-    for (int i = 0; i < numberOfNeurons; ++i) {
+    for (unsigned short int i = 0; i < numberOfNeurons; ++i) {
       this->Neurons.emplace_back(Neuron());
     }
   } catch (const std::exception& e) {
@@ -96,13 +104,6 @@ bool Layer::fillLayer(unsigned short int numberOfNeurons) {
     return false;
   }
   return true;
-}
-
-std::vector<Neuron> Layer::getNeurons() {
-  return Neurons;
-}
-unsigned short int Layer::getNumberOfNeurons() {
-  return Neurons.size();
 }
 
 // NeuralNetwork 
@@ -114,21 +115,72 @@ NeuralNetwork::NeuralNetwork() {
 }
 
 NeuralNetwork::~NeuralNetwork() {
-   this->inputLayer;
   this->hiddenLayers.clear();
-   this->outputLayer;
 }
 
-int NeuralNetwork::getNumberNextLayer(unsigned short int layerIndex) {
-  if (layerIndex == 0) {
-    return this->hiddenLayers.at(0).getNumberOfNeurons();
-  } else if (layerIndex > 0 && layerIndex < this->hiddenLayers.size()) {
-    return this->hiddenLayers.at(layerIndex).getNumberOfNeurons();
-  } else if (layerIndex == this->hiddenLayers.size()) {
-    return this->outputLayer.getNumberOfNeurons();
-  } else {
-    return 0;
+bool NeuralNetwork::initializeWeigths() {
+  std::cout << "Executing initializeWeigths" << std::endl;
+  try {
+    for (Neuron neuron: this->inputLayer.getNeurons()) {
+      for (Weight weight: neuron.getWeights()) {
+        weight.setWeight(genRandomValue());
+      }
+    }
+
+    // I am sorry for making three for's :(
+    for (Layer layer: this->hiddenLayers) {
+      for (Neuron neuron: layer.getNeurons()) {
+        for (Weight weight: neuron.getWeights()) {
+          weight.setWeight(genRandomValue());
+        }
+      }
+    }
+    
+    // Not sure if in outputLayer is needed
+    for (Neuron neuron: this->outputLayer.getNeurons()) {
+      for (Weight weight: neuron.getWeights()) {
+        weight.setWeight(genRandomValue());
+      }
+    }
+  } catch (const std::exception& e) {
+    std::cerr << "Error in initializeWeigths from NeuralNetwork\n" << e.what() << std::endl;
+    return false;
   }
+  return true;
+}
+
+bool NeuralNetwork::initializeBiases() {
+  // Same logic from above
+  std::cout << "Executing initializeBiases" << std::endl;
+  try {
+    for (Neuron neuron: this->inputLayer.getNeurons()) {
+      for (Weight weight: neuron.getWeights()) {
+        weight.setWeight(2.0); // For now I am setting as 2
+      }
+    }
+
+    for (Layer layer: this->hiddenLayers) {
+      for (Neuron neuron: layer.getNeurons()) {
+        for (Weight weight: neuron.getWeights()) {
+          weight.setWeight(2.0);
+        }
+      }
+    }
+    
+    for (Neuron neuron: this->outputLayer.getNeurons()) {
+      for (Weight weight: neuron.getWeights()) {
+        weight.setWeight(2.0);
+      }
+    }
+  } catch (const std::exception& e) {
+    std::cerr << "Error in initializeBiases from NeuralNetwork\n" << e.what() << std::endl;
+    return false;
+  }
+  return true;
+}
+
+bool NeuralNetwork::connectLayers() {
+  return true;
 }
 
 bool NeuralNetwork::buildNeuralNetwork(std::vector<unsigned short int> morfology) {
@@ -149,45 +201,11 @@ bool NeuralNetwork::buildNeuralNetwork(std::vector<unsigned short int> morfology
 
   } catch (const std::exception& e) {
     std::cerr << "Error in buildNeuralNetwork: " << e.what() << std::endl;
-
-    // this->inputLayer()
-    // this->hiddenLayers.clear();
-    // this->outputLayer;
-
     return false;
-  }
-  return true;
-}
-
-bool NeuralNetwork::connecLayers() {
-  this->inputLayer.fillLayer(0);
-  unsigned short int numberInNextLayer;
-  
-  for (Layer hiddenlayer: this->hiddenLayers) {
-    for (unsigned short int i = 0; i < hiddenlayer.getNumberOfNeurons(); ++i) {
-      numberInNextLayer = getNumberNextLayer(i+1);
-      hiddenlayer.getNeurons().at(i).connectWeights(numberInNextLayer);
-    }
   }
   return true;
 }
 
 bool NeuralNetwork::FeedFoward(std::vector<double> inputs) {
-  if (this->inputLayer.getNumberOfNeurons() != inputs.size()) {
-    std::cerr << "Invalid number of inpust" << std::endl;
-    return false;
-  } else {
-    Neuron currentlyNeuron;
-    for (size_t i = 0; i < inputs.size(); ++i) {
-      currentlyNeuron = this->inputLayer.getNeurons().at(i);
-      currentlyNeuron.setInput(inputs.at(i));
-      for (Weight weight: currentlyNeuron.getWeights()) {
-        weight.multiplyValue(currentlyNeuron.getInput());
-      }
-    }
-    for (Layer hiddenlayer: this->hiddenLayers) {
-
-    }
-  }
   return true;
 }

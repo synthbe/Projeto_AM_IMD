@@ -13,7 +13,7 @@ class Weight {
   Weight();
   ~Weight();
   void setWeight(double weight);
-  double getWeight();
+  double getWeight() const;
   bool multiplyValue(double value);
 };
 
@@ -21,28 +21,31 @@ class Neuron {
   private:
   double input;
   double output;
-  std::vector<Weight> Weights;
+  double bias;
+  std::vector<Weight> weights;
 
   public:
   Neuron();
   ~Neuron();
   void setInput(double input);
-  double getInput();
+  double getInput() const;
   void setOutput(double output);
-  double getOutput();
-  std::vector<Weight> getWeights();
+  double getOutput() const;
+  void setBias(double bias);
+  double getBias() const;
+  std::vector<Weight> getWeights() const;
   bool connectWeights(unsigned short int numberOfConnection);
 };
 
 class Layer {
   private:
   std::vector<Neuron> Neurons;
+
   public:
   Layer();
   ~Layer();
-  std::vector<Neuron> getNeurons();
+  std::vector<Neuron> getNeurons() const;
   bool fillLayer(unsigned short int numberOfNeurons);
-  unsigned short int getNumberOfNeurons();
 };
 
 class NeuralNetwork {
@@ -54,12 +57,14 @@ class NeuralNetwork {
   public:
   NeuralNetwork();
   ~NeuralNetwork();
-  bool buildNeuralNetwork(std::vector<unsigned short int> morfology);
-  int getNumberNextLayer(unsigned short int layerIndex);
-  bool connecLayers();
+  bool initializeWeigths();
+  bool initializeBiases();
+  bool connectLayers();
+  std::vector<Layer>& getLayers();
   bool FeedFoward(std::vector<double> inputs);
   bool BackPropagation();
   double getAccuracy(std::vector<double> predictedValue, std::vector<double> realValue);
+  bool buildNeuralNetwork(std::vector<unsigned short int> morfology);
 };
 
 #endif //COMPONENTS_H

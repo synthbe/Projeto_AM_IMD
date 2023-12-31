@@ -9,4 +9,6 @@ double Sigmoid(double x);
 
 double Tanh(double x);
 
+double genRandomValue();
+
 #endif //ACTIVATEFUNCTIONS_H

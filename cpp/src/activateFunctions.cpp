@@ -2,6 +2,7 @@
 
 #include "../include/activateFunctions.h"
 #include <cmath>
+#include <cstdlib>
 
 double Relu(const double x) {
   if (x < 0) {
@@ -17,4 +18,9 @@ double Sigmoid(double x) {
 
 double Tanh(double x) {
   return std::tanh(x);
+}
+
+double genRandomValue() {
+  srand((unsigned) time(NULL));
+  return (double) rand()/RAND_MAX;
 }
