@@ -65,21 +65,6 @@ std::vector<Weight> Neuron::getWeights() const{
   return this->weights;
 }
 
-bool Neuron::connectWeights(unsigned short int numberOfConnections) {
-  std::cout << "Executing connectWeights" << std::endl;
-  try {
-    this->weights.clear();
-    for (unsigned short int i = 0; i < numberOfConnections; ++i) {
-      Weight weight;
-      weights.push_back(weight);
-    }
-  } catch (const std::exception& e) {
-    std::cerr << "Error in connectWeights from Neuron\n" << e.what() << std::endl;
-    return false;
-  }
-  return true;
-}
-
 // Layer
 
 Layer::Layer() {

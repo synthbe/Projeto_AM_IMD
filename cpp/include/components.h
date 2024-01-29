@@ -34,7 +34,6 @@ class Neuron {
   void setBias(double bias);
   double getBias() const;
   std::vector<Weight> getWeights() const;
-  bool connectWeights(unsigned short int numberOfConnection);
 };
 
 class Layer {
