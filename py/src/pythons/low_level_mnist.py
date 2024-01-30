@@ -1,5 +1,6 @@
 from tensorflow import keras
 import numpy as np
+from sys import exit
 import matplotlib.pyplot as plt
 
 def Relu(x):
@@ -14,31 +15,32 @@ def Sigmoid(x):
 def derivativeSigmoid(x):
     return 1 - (Sigmoid(x))
 
-def initializeWeights(quantity: int) -> list:
-    layers = list()
+def lossFunction(output, label):
+    return np.mean((output - label)**2)
 
-    inputsWeights = np.random.uniform(-0.5, 0.5, (16, 784))
-    layers.append(inputsWeights)
+def initializeWeights(quantityOfLayers: int):
+    hiddenWeights = list()
 
-    for _ in range(quantity):
-        hiddenLayer = np.random.uniform(-0.5, 0.5, (16, 16))
-        layers.append(hiddenLayer)
+    inputWeights = np.random.uniform(-0.5, 0.5, (16, 784))
+
+    for _ in range(quantityOfLayers):
+        hiddenWeight = np.random.uniform(-0.5, 0.5, (16, 16))
+        hiddenWeights.append(hiddenWeight)
     
-    outputLayer = np.random.uniform(-0.5, 0.5, (10, 16))
-    layers.append(outputLayer)
+    outputWeights = np.random.uniform(-0.5, 0.5, (10, 16))
 
-    return layers
+    return inputWeights, hiddenWeights, outputWeights
 
-def initializeBiases(quantity: int) -> list:
-    biases = list()
+def initializeBiases(quantity: int):
+    hiddenBiases = list()
+    inputBiases = np.zeros((16, 1))
     for _ in range(quantity):
-        bias = np.random.uniform(-0.5, 0.5, (16, 16))
-        biases.append(bias)
+        hiddenBias = np.zeros((16, 1))
+        hiddenBiases.append(hiddenBias)
 
-    outputBias = np.random.uniform(-0.5, 0.5, (10, 16))
-    biases.append(outputBias)
+    outputBias = np.zeros((10, 1))
 
-    return biases
+    return inputBiases, hiddenBiases, outputBias
 
 def getDataset():
     mnist = keras.datasets.mnist
@@ -59,15 +61,32 @@ def getDataset():
 
 learning_rate = 0.01
 epochs = 5
-shot, error = 0, 0
+accuracy, loss = 0, 0
 
 if __name__ == "__main__":
     (images_train, labels_train), (images_test, labels_test) = getDataset()
-    weights = initializeWeights(5)
-    biases = initializeBiases(5)
+    inputWeights, hiddenWeights, outputWeights = initializeWeights(3)
+    inputBiases, hiddenBiases, outputBias = initializeBiases(3)
 
-    # for epoch in range(epochs):
-    #     for image, label in zip(images_train, labels_train):
+    for epoch in range(epochs):
+        for image, label in zip(images_train, labels_train):
+            image = image.reshape(-1, 1)
+            label = label.reshape(-1, 1)
+
+            # FeedFoward
+            preOutput = (inputWeights @ image) + inputBiases
+            preOutput = Relu(preOutput)
+            for weight, bias in zip(hiddenWeights, hiddenBiases):
+                preOutput = (weight @ preOutput) + bias
+                preOutput = Relu(preOutput)
+            preOutput = (outputWeights @ preOutput) + outputBias
+            output = Sigmoid(preOutput)
+
+            loss += lossFunction(output, label)
+
+            # BackPropagation
+
+
     #
     #
     #
