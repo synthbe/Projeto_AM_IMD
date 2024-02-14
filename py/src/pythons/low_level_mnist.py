@@ -1,7 +1,5 @@
 from tensorflow import keras
 import numpy as np
-from sys import exit
-import matplotlib.pyplot as plt
 
 def Relu(x):
     return np.maximum(0, x)
@@ -17,6 +15,9 @@ def derivativeSigmoid(x):
 
 def lossFunction(output, label):
     return np.mean((output - label)**2)
+
+def derivativeLoss(output, label):
+    return np.mean(output - label)
 
 def initializeWeights(quantityOfLayers: int):
     hiddenWeights = list()
@@ -74,17 +75,34 @@ if __name__ == "__main__":
             label = label.reshape(-1, 1)
 
             # FeedFoward
-            preOutput = (inputWeights @ image) + inputBiases
-            preOutput = Relu(preOutput)
+            inputOutput = (inputWeights @ image) + inputBiases
+            hiddenOutput = Relu(inputOutput)
             for weight, bias in zip(hiddenWeights, hiddenBiases):
-                preOutput = (weight @ preOutput) + bias
-                preOutput = Relu(preOutput)
-            preOutput = (outputWeights @ preOutput) + outputBias
-            output = Sigmoid(preOutput)
+                hiddenOutput = (weight @ hiddenOutput) + bias
+                hiddenOutput = Relu(hiddenOutput)
+            preoutput = (outputWeights @ hiddenOutput) + outputBias
+            output = Sigmoid(preoutput)
 
             loss += lossFunction(output, label)
 
             # BackPropagation
+            errorGrad = output - label
+            weightGrad = errorGrad * derivativeSigmoid(output) @ preoutput.T
+            biasGrad = errorGrad * derivativeSigmoid(output) 
+            outputWeights -= learning_rate * weightGrad
+            outputBias -= learning_rate * biasGrad
+
+            errorGrad *= weight.T @ derivativeSigmoid(preoutput) 
+            for weight, bias in reversed(zip(hiddenWeights, hiddenBiases)):
+                weightGrad = errorGrad * derivativeRelu(output) @ hiddenOutput.T
+                biasgrad = errorGrad * derivativeRelu(output)
+                weight -= learning_rate * weightGrad
+                bias -= learning_rate * biasGrad
+
+                errorGrad *= weight.T @ derivativeRelu(output)
+            
+        print(loss)
+        loss = 0
 
 
     #

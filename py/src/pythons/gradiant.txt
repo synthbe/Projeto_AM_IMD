@@ -1,0 +1,11 @@
+# y = f(w*x + b)
+# e = g(y, label)
+
+# de/dw = de/dy * dy/dx * dw/dx
+# => de/dw = g'(y, label) * f'(w*x + b) * x.T
+
+# de/db = de/dy * dy/dx
+# => de/db = g'(y, label) * f'(w*x + b)
+
+# de/dx = de/dy * dy/dw * dw/dx
+# => de/dx = g'(y, label) * f'(w*x + b) * w.T
