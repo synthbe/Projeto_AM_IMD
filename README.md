@@ -1,8 +1,11 @@
-This repository is just to store my learning about Artificial Inteligence
-and Data Science.
+## My Machile Learning road learning
+This repository serves as a collection of my learnings about Machile Learning and Data Science, gathered from sources and videos available that I find.
 
-Mainly I am doing in c++ and python, since these are the languanges that I like the most
+### Purpose
+My primary aim in this repository is just to store my codes in which I am using to learn and understand new concepts and techniques by appling them to datasets that I find nteresting. I often find datasets on [Kaggle](https://www.kaggle.com/datasets) to work with.
 
-In c++, I am trying to understand the low level of the AI, to learn the fundamentals
+### Tools and Frameworks
+I primarily use Python to familiarize myself with libraries and frameworks, especially TensorFlow and Keras. Also, I intend to learn the low level of the algorithms and implement them in c++. Sill far from it though.
 
-In python, I am using the libraries to already be able to do something, but also trying to explore a low level
+### Future Goals
+My hope is to gain a good understanding of Machine Learning and Data Science using these languages.
